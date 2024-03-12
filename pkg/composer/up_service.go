@@ -81,7 +81,7 @@ func (c *Composer) upServices(ctx context.Context, parsedServices []*servicepars
 		NoColor:     uo.NoColor,
 		NoLogPrefix: uo.NoLogPrefix,
 	}
-	if err := c.Logs(ctx, lo, services); err != nil {
+	if err := c.Logs(ctx, lo, services, uo.AbortOnContainerExit); err != nil {
 		return err
 	}
 

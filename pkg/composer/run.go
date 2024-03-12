@@ -271,7 +271,7 @@ func (c *Composer) runServices(ctx context.Context, parsedServices []*servicepar
 			NoLogPrefix: ro.NoLogPrefix,
 		}
 		// it finally causes to show logs of some containers which are stopped but not deleted.
-		if err := c.Logs(ctx, lo, services); err != nil {
+		if err := c.Logs(ctx, lo, services, false); err != nil {
 			return err
 		}
 	}

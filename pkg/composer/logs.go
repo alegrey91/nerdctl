@@ -39,7 +39,7 @@ type LogsOptions struct {
 	NoLogPrefix bool
 }
 
-func (c *Composer) Logs(ctx context.Context, lo LogsOptions, services []string) error {
+func (c *Composer) Logs(ctx context.Context, lo LogsOptions, services []string, abortOnContainerExit bool) error {
 	var serviceNames []string
 	err := c.project.WithServices(services, func(svc types.ServiceConfig) error {
 		serviceNames = append(serviceNames, svc.Name)
@@ -52,10 +52,10 @@ func (c *Composer) Logs(ctx context.Context, lo LogsOptions, services []string) 
 	if err != nil {
 		return err
 	}
-	return c.logs(ctx, containers, lo)
+	return c.logs(ctx, containers, lo, abortOnContainerExit)
 }
 
-func (c *Composer) logs(ctx context.Context, containers []containerd.Container, lo LogsOptions) error {
+func (c *Composer) logs(ctx context.Context, containers []containerd.Container, lo LogsOptions, abortOnContainerExit bool) error {
 	var logTagMaxLen int
 	type containerState struct {
 		name   string
@@ -144,6 +144,11 @@ selectLoop:
 			if lo.Follow {
 				// When `nerdctl logs -f` has exited, we can assume that the container has exited
 				log.G(ctx).Infof("Container %q exited", containerName)
+				// In case a container has exited and the parameter --abort-on-container-exit,
+				// we break the loop and stop all the ramaining containers
+				if abortOnContainerExit {
+					break selectLoop
+				}
 			} else {
 				log.G(ctx).Debugf("Logs for container %q reached EOF", containerName)
 			}

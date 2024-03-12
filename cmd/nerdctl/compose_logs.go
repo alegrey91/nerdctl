@@ -86,5 +86,5 @@ func composeLogsAction(cmd *cobra.Command, args []string) error {
 		NoColor:     noColor,
 		NoLogPrefix: noLogPrefix,
 	}
-	return c.Logs(ctx, lo, args)
+	return c.Logs(ctx, lo, args, false)
 }
